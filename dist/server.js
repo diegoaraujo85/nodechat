@@ -22,29 +22,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var path = __importStar(require("path"));
-// import * as http from 'http';
-// import * as socketio from 'socket.io';
-var app = express_1.default();
-var http = require('http').createServer(app);
+const express_1 = __importDefault(require("express"));
+const path = __importStar(require("path"));
+const app = express_1.default();
+const http = require('http').createServer(app);
 // set up socket.io and bind it to our
 // http server.
-var io = require("socket.io")(http);
-app.get('/', function (req, res) {
-    // res.send('<h1>Hello world</h1>');
+const io = require("socket.io")(http);
+app.get('/', (req, res) => {
     res.sendFile(path.resolve("./client/index.html"));
 });
-io.on("connection", function (socket) {
+io.on("connection", (socket) => {
     console.log("a user connected");
-    socket.on('disconnect', function () {
+    socket.on('disconnect', () => {
         console.log('user disconnected');
     });
     // socket.on('chat message', (msg: any) => {
     //   console.log('message: ' + msg);
     // });
     // send the message to everyone
-    socket.on('chat message', function (msg) {
+    socket.on('chat message', (msg) => {
         io.emit('chat message', msg);
     });
 });
@@ -54,6 +51,7 @@ io.on("connection", function (socket) {
 // io.on('connection', (socket: any) => {
 //   socket.broadcast.emit('hi');
 // });
-var server = http.listen(3000, function () {
+const server = http.listen(3000, () => {
     console.log('listening on *:3000');
 });
+//# sourceMappingURL=server.js.map
