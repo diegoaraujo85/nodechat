@@ -8,24 +8,36 @@ const http = require('http').createServer(app);
 // http server.
 const io = require("socket.io")(http);
 
+
+interface MessageObjectProps {
+  username: string;
+  message: string;
+}
+
+let messages: MessageObjectProps[] = [];
+
 app.get('/', (req, res) => {
   res.sendFile(path.resolve("./client/index.html"));
 });
 
 io.on("connection", (socket: any) => {
-  console.log("a user connected");
+  console.log(`a user connected: ${socket.id}`);
 
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+  socket.emit('previousMessages', messages)
 
   // socket.on('chat message', (msg: any) => {
   //   console.log('message: ' + msg);
   // });
 
   // send the message to everyone
-  socket.on('chat message', (msg: any) => {
-    io.emit('chat message', msg);
+  socket.on('sendMessage', (data: MessageObjectProps) => {
+    messages.push(data);
+    io.emit('receivedMessage', data);
+  });
+
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
   });
 })
 
@@ -40,5 +52,5 @@ io.on("connection", (socket: any) => {
 // });
 
 const server = http.listen(3000, () => {
-  console.log('listening on *:3000');
+  console.log('listening on http://localhost:3000');
 });

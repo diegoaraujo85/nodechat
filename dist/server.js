@@ -29,20 +29,23 @@ const http = require('http').createServer(app);
 // set up socket.io and bind it to our
 // http server.
 const io = require("socket.io")(http);
+let messages = [];
 app.get('/', (req, res) => {
     res.sendFile(path.resolve("./client/index.html"));
 });
 io.on("connection", (socket) => {
-    console.log("a user connected");
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-    });
+    console.log(`a user connected: ${socket.id}`);
+    socket.emit('previousMessages', messages);
     // socket.on('chat message', (msg: any) => {
     //   console.log('message: ' + msg);
     // });
     // send the message to everyone
-    socket.on('chat message', (msg) => {
-        io.emit('chat message', msg);
+    socket.on('sendMessage', (data) => {
+        messages.push(data);
+        io.emit('receivedMessage', data);
+    });
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
     });
 });
 // In order to send an event to everyone, Socket.IO gives us the io.emit() method.
@@ -52,6 +55,6 @@ io.on("connection", (socket) => {
 //   socket.broadcast.emit('hi');
 // });
 const server = http.listen(3000, () => {
-    console.log('listening on *:3000');
+    console.log('listening on http://localhost:3000');
 });
 //# sourceMappingURL=server.js.map
